@@ -1,38 +1,25 @@
-import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
 
-const connectionString = process.env.DATABASE_URL;
+import resumeRoutes from './routes/resume.routes.js'
 
-if (!connectionString) {
-  throw new Error('DATABASE_URL is not set. Add it to your environment before starting the server.');
-}
+const app = express();
 
-const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+// middlewares
+app.use(express.json());
+app.use(cors());
 
-async function main(): Promise<void> {
-  const user = await prisma.user.upsert({
-    where: { email: 'john@example.com' },
-    update: {
-      name: 'John Doe',
-      password: 'change-me',
-    },
-    create: {
-      name: 'John Doe',
-      email: 'john@example.com',
-      password: 'change-me',
-    },
-  });
+const PORT = process.env.PORT || 5000;
 
-  console.log(user);
-}
 
-main()
-  .catch((error: unknown) => {
-    console.error(error);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// routes
+app.use('/api/resume', resumeRoutes)
+// Handle multer errors
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  res.status(400).json({ success: false, error: err.message })
+})
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
