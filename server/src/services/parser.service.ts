@@ -1,4 +1,4 @@
-// const pdfParse = require("pdf-parse");   // to extract text from PDF files
+// to extract text from PDF files
 import { PDFParse } from 'pdf-parse'  // to extract text from PDF files
 import mammoth from "mammoth"; // to extract text from .docx files
 
